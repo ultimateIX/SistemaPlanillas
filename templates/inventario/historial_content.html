@@ -1,0 +1,61 @@
+<h2 class="mb-4">Historial de Movimientos</h2>
+
+<div class="card">
+
+    <div class="card-body">
+
+        <table class="table table-hover">
+
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Total</th>
+                    <th>Antes</th>
+                    <th>Después</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for mov in movimientos %}
+
+                <tr>
+                    <td>{{ mov.fecha|date:"d/m/Y H:i" }}</td>
+
+                    <td>
+                        {% if mov.tipo == "ENTRADA" %}
+                            <span class="badge bg-success">Entrada</span>
+                        {% else %}
+                            <span class="badge bg-danger">Salida</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ mov.producto.nombre }}</td>
+                    <td>{{ mov.cantidad }}</td>
+                    <td>${{ mov.precio_unitario|floatformat:2 }}</td>
+                    <td>${{ mov.total|floatformat:2 }}</td>
+                    <td>{{ mov.existencia_anterior }}</td>
+                    <td>{{ mov.existencia_nueva }}</td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="8">
+                        No hay movimientos registrados.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

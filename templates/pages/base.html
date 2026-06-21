@@ -127,8 +127,49 @@
 
         </a>
 
-        <!-- HISTORIAL -->
+       <a
+    hx-get="{% url 'productos' %}"
+    hx-target="#contenido"
+    hx-push-url="true">
 
+    <i class="bi bi-box-seam"></i>
+
+    Productos
+
+</a>
+
+<a
+    hx-get="{% url 'compras' %}"
+    hx-target="#contenido"
+    hx-push-url="true">
+
+    <i class="bi bi-cart-plus"></i>
+
+    Compras
+
+</a>
+
+<a
+    hx-get="{% url 'ventas' %}"
+    hx-target="#contenido"
+    hx-push-url="true">
+
+    <i class="bi bi-cart-dash"></i>
+
+    Ventas
+
+</a>
+
+<a
+    hx-get="{% url 'historial_movimientos' %}"
+    hx-target="#contenido"
+    hx-push-url="true">
+
+    <i class="bi bi-clock-history"></i>
+
+    Historial de Movimientos
+
+</a>
       
 
         <!-- CONFIGURACION -->

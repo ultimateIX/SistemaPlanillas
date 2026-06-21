@@ -1,0 +1,65 @@
+<div class="modal fade show d-block" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <form
+                method="post"
+                hx-post="{{ request.path }}"
+                hx-target="#contenido"
+                hx-swap="innerHTML"
+                hx-on::before-request="this.querySelector('button[type=submit]').disabled = true">
+
+                {% csrf_token %}
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Producto
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        onclick="cerrarModal()">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    {{ form.as_p }}
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="cerrarModal()">
+
+                        Cancelar
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+
+                        Guardar
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal-backdrop fade show"></div>

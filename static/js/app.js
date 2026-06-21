@@ -195,3 +195,10 @@ document.body.addEventListener(
 
     }
 );
+
+document.body.addEventListener(
+    'cerrarModalInventario',
+    function () {
+        cerrarModal();
+    }
+);

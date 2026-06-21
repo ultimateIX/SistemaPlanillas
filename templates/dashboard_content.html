@@ -6,60 +6,128 @@
 
 </div>
 
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h6>👥 Empleados Activos</h6>
+            <h3>{{ empleados_activos }}</h3>
+            <span class="text-success">Registrados en el sistema</span>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h6>📄 Planillas Generadas</h6>
+            <h3>{{ planillas_generadas }}</h3>
+            <span class="text-success">Historial actual</span>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h6>📦 Productos</h6>
+            <h3>{{ productos_total }}</h3>
+            <span class="text-success">Registrados</span>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h6>🛒 Compras</h6>
+            <h3>{{ compras_total }}</h3>
+            <span class="text-success">Entradas registradas</span>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h6>💵 Ventas</h6>
+            <h3>{{ ventas_total }}</h3>
+            <span class="text-success">Salidas registradas</span>
+        </div>
+    </div>
+
+</div>
+
 <div class="row g-3">
 
-    <div class="col-md-4">
+    <div class="col-md-6">
 
         <div class="card p-3 shadow-sm">
 
-            <h6>👥 Empleados Activos</h6>
+            <h5 class="mb-3">
+                Cantidad comprada por mes
+            </h5>
 
-            <h3>
-                {{ empleados_activos }}
-            </h3>
-
-            <span class="text-success">
-                Registrados en el sistema
-            </span>
+            <canvas id="graficaCompras"></canvas>
 
         </div>
 
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6">
 
         <div class="card p-3 shadow-sm">
 
-            <h6>📄 Planillas Generadas</h6>
+            <h5 class="mb-3">
+                Cantidad vendida por mes
+            </h5>
 
-            <h3>
-                {{ planillas_generadas }}
-            </h3>
-
-            <span class="text-success">
-                Historial actual
-            </span>
-
-        </div>
-
-    </div>
-
-    <div class="col-md-4">
-
-        <div class="card p-3 shadow-sm">
-
-            <h6>💰 Última Planilla</h6>
-
-            <h3>
-                ${{ total_ultima_planilla|floatformat:2 }}
-            </h3>
-
-            <span class="text-success">
-                Total pagado
-            </span>
+            <canvas id="graficaVentas"></canvas>
 
         </div>
 
     </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    var meses = {{ meses|safe }};
+
+    var comprasData = {{ compras_data|safe }};
+
+    var ventasData = {{ ventas_data|safe }};
+
+    new Chart(
+        document.getElementById('graficaCompras'),
+        {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [
+                    {
+                        label: 'Compras',
+                        data: comprasData
+                    }
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+    new Chart(
+        document.getElementById('graficaVentas'),
+        {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [
+                    {
+                        label: 'Ventas',
+                        data: ventasData
+                    }
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+</script>

@@ -19,7 +19,7 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get(
     "DEBUG",
-    "False"
+    "True"
 ) == "True"
 
 ALLOWED_HOSTS = os.environ.get(
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "empleados",
     "planillas",
     "usuarios",
+    "inventario",
 
 ]
 
