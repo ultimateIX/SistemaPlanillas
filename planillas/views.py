@@ -22,6 +22,11 @@ from .models import (
 )
 
 
+def es_htmx(request):
+
+    return request.headers.get("HX-Request")
+
+
 def calcular_isr_quincenal(base_gravada):
 
     if base_gravada <= Decimal("0.00"):
@@ -95,12 +100,10 @@ def calcular_horas_extra_diurnas(empleado, cantidad_horas):
         * Decimal("2")
     )
 
-    total_horas_extra = round(
+    return round(
         valor_hora_extra * cantidad_horas,
         2
     )
-
-    return total_horas_extra
 
 
 def calcular_vacaciones(empleado, fecha_inicio, fecha_fin):
@@ -350,7 +353,7 @@ def planillas(request):
         "empleados": empleados
     }
 
-    if request.headers.get("HX-Request"):
+    if es_htmx(request):
 
         return render(
             request,
@@ -706,9 +709,15 @@ def configuracion(request):
             instance=configuracion
         )
 
+    template = "planillas/configuracion.html"
+
+    if es_htmx(request):
+
+        template = "planillas/configuracion_content.html"
+
     return render(
         request,
-        "planillas/configuracion.html",
+        template,
         {
             "form": form
         }
@@ -719,9 +728,15 @@ def isr(request):
 
     tramos = TramoISR.objects.all()
 
+    template = "planillas/isr.html"
+
+    if es_htmx(request):
+
+        template = "planillas/isr_content.html"
+
     return render(
         request,
-        "planillas/isr.html",
+        template,
         {
             "tramos": tramos
         }
@@ -742,7 +757,7 @@ def isr_crear(request):
 
             return render(
                 request,
-                "planillas/isr.html",
+                "planillas/isr_content.html",
                 {
                     "tramos": TramoISR.objects.all()
                 }
@@ -781,7 +796,7 @@ def isr_editar(request, id):
 
             return render(
                 request,
-                "planillas/isr.html",
+                "planillas/isr_content.html",
                 {
                     "tramos": TramoISR.objects.all()
                 }
@@ -806,9 +821,15 @@ def aguinaldo(request):
 
     tramos = TramoAguinaldo.objects.all()
 
+    template = "planillas/aguinaldo.html"
+
+    if es_htmx(request):
+
+        template = "planillas/aguinaldo_content.html"
+
     return render(
         request,
-        "planillas/aguinaldo.html",
+        template,
         {
             "tramos": tramos
         }
@@ -829,7 +850,7 @@ def aguinaldo_crear(request):
 
             return render(
                 request,
-                "planillas/aguinaldo.html",
+                "planillas/aguinaldo_content.html",
                 {
                     "tramos": TramoAguinaldo.objects.all()
                 }
@@ -868,7 +889,7 @@ def aguinaldo_editar(request, id):
 
             return render(
                 request,
-                "planillas/aguinaldo.html",
+                "planillas/aguinaldo_content.html",
                 {
                     "tramos": TramoAguinaldo.objects.all()
                 }
@@ -973,9 +994,15 @@ def cargar_tablas_legales(request):
         instance=configuracion
     )
 
+    template = "planillas/configuracion.html"
+
+    if es_htmx(request):
+
+        template = "planillas/configuracion_content.html"
+
     return render(
         request,
-        "planillas/configuracion.html",
+        template,
         {
             "form": form
         }

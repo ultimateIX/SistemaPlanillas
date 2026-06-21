@@ -1,21 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Sistema de Planillas</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet">
+
 </head>
-<body class="bg-dark d-flex justify-content-center align-items-center" style="height:100vh;">
 
-<div class="card p-4" style="width: 350px;">
-    <h3 class="text-center">Iniciar sesión</h3>
+<body class="bg-dark">
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+    <div class="container min-vh-100 d-flex justify-content-center align-items-center">
 
-        <button class="btn btn-primary w-100">Entrar</button>
-    </form>
-</div>
+        <div
+            class="card shadow-lg border-0"
+            style="width: 420px; border-radius: 18px;">
+
+            <div class="card-body p-5">
+
+                <div class="text-center mb-4">
+
+                    <div
+                        class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 70px; height: 70px; font-size: 32px;">
+
+                        <i class="bi bi-person-lock"></i>
+
+                    </div>
+
+                    <h3 class="fw-bold mb-1">
+                        Sistema de Planillas
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Inicia sesión para continuar
+                    </p>
+
+                </div>
+
+                {% if form.errors %}
+
+                <div class="alert alert-danger">
+
+                    Usuario o contraseña incorrectos.
+
+                </div>
+
+                {% endif %}
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Usuario
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+
+                            <input
+                                type="text"
+                                name="username"
+                                class="form-control"
+                                placeholder="Ingrese su usuario"
+                                required
+                                autofocus>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Contraseña
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-lock"></i>
+                            </span>
+
+                            <input
+                                type="password"
+                                name="password"
+                                class="form-control"
+                                placeholder="Ingrese su contraseña"
+                                required>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100 py-2 fw-semibold">
+
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Entrar
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </body>
 </html>

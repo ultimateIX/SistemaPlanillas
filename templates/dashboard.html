@@ -6,43 +6,6 @@ Dashboard
 
 {% block content %}
 
-<!-- Topbar -->
-<div class="topbar d-flex justify-content-between align-items-center">
-    <h5>Bienvenido, {{ user.username }}</h5>
-
-</div>
-
-<!-- Cards -->
-<div class="row g-3">
-
-    <div class="col-md-4">
-        <div class="card p-3 shadow-sm">
-            <h6>💰 Ingresos</h6>
-            <h3>$680</h3>
-            <span class="text-success">+18%</span>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card p-3 shadow-sm">
-            <h6>👥 Empleados</h6>
-            <h3>25</h3>
-            <span class="text-success">+3 nuevos</span>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card p-3 shadow-sm">
-            <h6>📈 Progreso</h6>
-            <h3>83%</h3>
-
-            <div class="progress">
-                <div class="progress-bar bg-success" style="width:83%"></div>
-            </div>
-
-        </div>
-    </div>
-
-</div>
+{% include 'dashboard_content.html' %}
 
 {% endblock %}

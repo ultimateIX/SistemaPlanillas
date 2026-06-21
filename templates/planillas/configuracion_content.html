@@ -1,0 +1,155 @@
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Configuración de Planillas</h2>
+
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h4>Configuración General</h4>
+
+                    <p>
+                        AFP, ISSS, Topes, Aguinaldo Exento y Quincena 25.
+                    </p>
+
+                    <a
+                        href="#parametros-generales"
+                        class="btn btn-primary">
+
+                        Abrir
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h4>Tabla ISR</h4>
+
+                    <p>
+                        Tramos configurables para renta.
+                    </p>
+
+                    <button
+                        class="btn btn-success"
+                        hx-get="{% url 'isr' %}"
+                        hx-target="#contenido"
+                        hx-swap="innerHTML">
+
+                        Abrir
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h4>Tabla Aguinaldo</h4>
+
+                    <p>
+                        Tramos por antigüedad.
+                    </p>
+
+                    <button
+                        class="btn btn-warning"
+                        hx-get="{% url 'aguinaldo' %}"
+                        hx-target="#contenido"
+                        hx-swap="innerHTML">
+
+                        Abrir
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card mb-4">
+
+        <div class="card-body text-center">
+
+            <h4>Cargar Tablas Legales</h4>
+
+            <p>
+                ISR y Aguinaldo por defecto.
+            </p>
+
+            <button
+                class="btn btn-danger"
+                hx-get="{% url 'cargar_tablas_legales' %}"
+                hx-target="#contenido"
+                hx-swap="innerHTML">
+
+                Cargar Datos
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <div
+        id="parametros-generales"
+        class="card">
+
+        <div class="card-header">
+
+            Parámetros Generales
+
+        </div>
+
+        <div class="card-body">
+
+            <form
+                method="post"
+                hx-post="{% url 'configuracion' %}"
+                hx-target="#contenido"
+                hx-swap="innerHTML">
+
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+
+                    Guardar Configuración
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

@@ -325,3 +325,27 @@ body {
 .modal.show .modal-dialog {
     transform: scale(1);
 }
+#contenido {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.contenido-saliendo {
+    opacity: 0.35;
+    transform: translateY(8px);
+}
+
+.contenido-entrando {
+    animation: entrada-suave 0.25s ease;
+}
+
+@keyframes entrada-suave {
+    from {
+        opacity: 0.35;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

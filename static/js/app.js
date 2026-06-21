@@ -6,15 +6,39 @@ document.body.addEventListener(
     'htmx:beforeRequest',
     function () {
 
-        const loader =
-            document.getElementById(
-                'loader'
-            );
+        const loader = document.getElementById('loader');
 
         if (loader) {
+            loader.style.display = 'flex';
+        }
 
-            loader.style.display =
-                'flex';
+        const contenido = document.getElementById('contenido');
+
+        if (contenido) {
+            contenido.classList.add('contenido-saliendo');
+        }
+
+    }
+);
+
+document.body.addEventListener(
+    'htmx:afterSwap',
+    function () {
+
+        const contenido = document.getElementById('contenido');
+
+        if (contenido) {
+
+            contenido.classList.remove('contenido-saliendo');
+
+            contenido.classList.add('contenido-entrando');
+
+            setTimeout(
+                function () {
+                    contenido.classList.remove('contenido-entrando');
+                },
+                250
+            );
 
         }
 
@@ -25,15 +49,30 @@ document.body.addEventListener(
     'htmx:afterRequest',
     function () {
 
-        const loader =
-            document.getElementById(
-                'loader'
-            );
+        const loader = document.getElementById('loader');
 
         if (loader) {
+            loader.style.display = 'none';
+        }
 
-            loader.style.display =
-                'none';
+    }
+);
+
+// =====================================
+// CERRAR MODAL AL HACER CLICK FUERA
+// =====================================
+
+document.addEventListener(
+    'click',
+    function (event) {
+
+        if (
+            event.target.classList.contains(
+                'modal-overlay'
+            )
+        ) {
+
+            cerrarModal();
 
         }
 
@@ -41,7 +80,7 @@ document.body.addEventListener(
 );
 
 // =====================================
-// EMPLEADO GUARDADO
+// REFRESCAR EMPLEADOS
 // =====================================
 
 document.body.addEventListener(
@@ -50,18 +89,34 @@ document.body.addEventListener(
 
         cerrarModal();
 
+        htmx.ajax(
+            'GET',
+            '/empleados/',
+            {
+                target: '#contenido',
+                swap: 'innerHTML'
+            }
+        );
+
     }
 );
 
 // =====================================
-// PLANILLA GENERADA
+// REFRESCAR PLANILLAS
 // =====================================
 
 document.body.addEventListener(
     'planillaGenerada',
     function () {
 
-        cerrarModal();
+        htmx.ajax(
+            'GET',
+            '/planillas/',
+            {
+                target: '#contenido',
+                swap: 'innerHTML'
+            }
+        );
 
     }
 );
@@ -78,9 +133,7 @@ function cerrarModal() {
         );
 
     if (modalContainer) {
-
         modalContainer.innerHTML = '';
-
     }
 
     document
@@ -106,7 +159,7 @@ function cerrarModal() {
 }
 
 // =====================================
-// ABRIR MODAL BOOTSTRAP
+// ABRIR MODAL BOOTSTRAP SI EXISTE
 // =====================================
 
 document.body.addEventListener(
@@ -115,7 +168,7 @@ document.body.addEventListener(
 
         const modalElement =
             document.querySelector(
-                '.modal'
+                '#modal-container .modal'
             );
 
         if (modalElement) {
@@ -129,10 +182,10 @@ document.body.addEventListener(
 
                 modal.show();
 
-            }
-            catch (error) {
+            } catch (error) {
 
                 console.log(
+                    'Bootstrap Modal:',
                     error
                 );
 
