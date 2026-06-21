@@ -1,0 +1,211 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+
+    {% block title %}
+
+        Sistema de Planillas
+
+    {% endblock %}
+
+</title>
+
+<!-- ===================================== -->
+<!-- BOOTSTRAP -->
+<!-- ===================================== -->
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+<!-- ===================================== -->
+<!-- ICONOS -->
+<!-- ===================================== -->
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    rel="stylesheet">
+
+<!-- ===================================== -->
+<!-- CSS -->
+<!-- ===================================== -->
+
+<link rel="stylesheet"
+      href="{% static 'css/styles.css' %}?v=99">
+
+<!-- ===================================== -->
+<!-- HTMX -->
+<!-- ===================================== -->
+
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+
+</head>
+
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<!-- ===================================== -->
+<!-- LOADER -->
+<!-- ===================================== -->
+
+<div id="loader"
+     class="loader-container">
+
+    <div class="spinner-border text-primary">
+
+    </div>
+
+</div>
+
+<!-- ===================================== -->
+<!-- SIDEBAR -->
+<!-- ===================================== -->
+
+<div class="sidebar">
+
+    <!-- LOGO -->
+
+    <div class="logo-container">
+
+        <img
+            src="{% static 'img/logo2.png' %}"
+            alt="Logo"
+            class="logo">
+
+    </div>
+
+    <!-- MENU -->
+
+    <div class="menu">
+
+        <!-- DASHBOARD -->
+
+        <a
+            hx-get="{% url 'dashboard' %}"
+            hx-target="#contenido"
+            hx-push-url="true">
+
+            <i class="bi bi-speedometer2"></i>
+
+            Dashboard
+
+        </a>
+
+        <!-- EMPLEADOS -->
+
+        <a
+            hx-get="{% url 'empleados' %}"
+            hx-target="#contenido"
+            hx-push-url="true">
+
+            <i class="bi bi-people"></i>
+
+            Empleados
+
+        </a>
+
+        <!-- PLANILLAS -->
+
+        <a
+            hx-get="{% url 'planillas' %}"
+            hx-target="#contenido"
+            hx-push-url="true">
+
+            <i class="bi bi-cash-stack"></i>
+
+            Planillas
+
+        </a>
+
+        <!-- HISTORIAL -->
+
+        <a
+            hx-get="{% url 'historial_planillas' %}"
+            hx-target="#contenido"
+            hx-push-url="true">
+
+            <i class="bi bi-file-earmark-text"></i>
+
+            Historial
+
+        </a>
+
+        <!-- CONFIGURACION -->
+
+        <a
+            hx-get="{% url 'configuracion' %}"
+            hx-target="#contenido"
+            hx-push-url="true">
+
+            <i class="bi bi-gear"></i>
+
+            Configuración
+
+        </a>
+
+    </div>
+
+    <!-- FOOTER -->
+
+    <div class="sidebar-footer">
+
+        <a
+            href="{% url 'logout' %}"
+            class="logout-btn">
+
+            <i class="bi bi-box-arrow-right"></i>
+
+            Cerrar sesión
+
+        </a>
+
+    </div>
+
+</div>
+
+<!-- ===================================== -->
+<!-- CONTENIDO -->
+<!-- ===================================== -->
+
+<div
+    class="main"
+    id="contenido">
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+<!-- ===================================== -->
+<!-- MODALES HTMX -->
+<!-- ===================================== -->
+
+<div id="modal-container">
+
+</div>
+
+<!-- ===================================== -->
+<!-- BOOTSTRAP -->
+<!-- ===================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ===================================== -->
+<!-- JS PROPIO -->
+<!-- ===================================== -->
+
+<script src="{% static 'js/app.js' %}?v=5"></script>
+
+</body>
+
+</html>

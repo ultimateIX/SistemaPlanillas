@@ -1,0 +1,183 @@
+<div class="modal fade show"
+     style="display:block;"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <!-- HEADER -->
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    {% if form.instance.pk %}
+
+                        Editar Empleado
+
+                    {% else %}
+
+                        Nuevo Empleado
+
+                    {% endif %}
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    onclick="cerrarModal()">
+                </button>
+
+            </div>
+
+            <!-- FORM -->
+
+            {% if form.instance.pk %}
+
+            <form
+                hx-post="{% url 'empleado_editar' form.instance.id %}"
+                hx-target="#contenido"
+                hx-swap="innerHTML">
+
+            {% else %}
+
+            <form
+                hx-post="{% url 'empleado_crear' %}"
+                hx-target="#contenido"
+                hx-swap="innerHTML">
+
+            {% endif %}
+
+                {% csrf_token %}
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Nombre Completo
+                            </label>
+
+                            {{ form.nombre_completo }}
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                DUI
+                            </label>
+
+                            {{ form.dui }}
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Número ISSS
+                            </label>
+
+                            {{ form.numero_isss }}
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Teléfono
+                            </label>
+
+                            {{ form.telefono }}
+
+                        </div>
+                        <div class="col-md-6 mb-3">
+
+    <label class="form-label">
+
+        Correo
+
+    </label>
+
+    {{ form.correo }}
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+    <label class="form-label">
+
+        Cargo
+
+    </label>
+
+    {{ form.cargo }}
+
+</div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Fecha de Ingreso
+                            </label>
+
+                            {{ form.fecha_ingreso }}
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Salario Mensual
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+
+                                    $
+
+                                </span>
+
+                                {{ form.salario_mensual }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="cerrarModal()">
+
+                        Cancelar
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success">
+
+                        Guardar Empleado
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

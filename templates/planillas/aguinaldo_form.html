@@ -1,0 +1,66 @@
+<div class="modal fade show"
+     style="display:block;">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Tramo Aguinaldo
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    onclick="cerrarModal()">
+
+                </button>
+
+            </div>
+
+            <form
+
+                hx-post="{{ request.path }}"
+
+                hx-target="#contenido"
+
+                hx-swap="innerHTML">
+
+                <div class="modal-body">
+
+                    {{ form.as_p }}
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="cerrarModal()">
+
+                        Cancelar
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+
+                        Guardar
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

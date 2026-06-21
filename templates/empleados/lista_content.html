@@ -1,0 +1,175 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>
+
+        Empleados
+
+    </h2>
+
+    <button
+        class="btn btn-primary shadow-sm"
+
+        hx-get="{% url 'empleado_crear' %}"
+
+        hx-target="#modal-container"
+
+        hx-swap="innerHTML">
+
+        <i class="bi bi-plus-circle"></i>
+
+        Nuevo Empleado
+
+    </button>
+
+</div>
+
+<div class="card">
+
+    <div class="card-body">
+
+        <table class="table table-hover align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>DUI</th>
+
+                    <th>Nombre</th>
+
+                    <th>ISSS</th>
+
+                    <th>Teléfono</th>
+
+                    <th>Correo</th>
+
+                    <th>Cargo</th>
+
+                    <th>Ingreso</th>
+
+                    <th>Antigüedad</th>
+
+                    <th>Salario</th>
+
+                    <th>Acciones</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for empleado in empleados %}
+
+                <tr>
+
+                    <td>
+
+                        {{ empleado.dui }}
+
+                    </td>
+
+                    <td>
+
+                        {{ empleado.nombre_completo }}
+
+                    </td>
+
+                    <td>
+
+                        {{ empleado.numero_isss }}
+
+                    </td>
+
+                    <td>
+
+                        {{ empleado.telefono }}
+
+                    </td>
+
+                    <td>
+
+                        {{ empleado.correo|default:"-" }}
+
+                    </td>
+
+                    <td>
+
+                        {{ empleado.cargo|default:"-" }}
+
+                    </td>
+
+                    <td>
+
+                        {{ empleado.fecha_ingreso|date:"d/m/Y" }}
+
+                    </td>
+
+                    <td>
+
+                        {{ empleado.antiguedad }} años
+
+                    </td>
+
+                    <td>
+
+                        ${{ empleado.salario_mensual|floatformat:2 }}
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-warning btn-sm"
+
+                            hx-get="{% url 'empleado_editar' empleado.id %}"
+
+                            hx-target="#modal-container"
+
+                            hx-swap="innerHTML">
+
+                            <i class="bi bi-pencil"></i>
+
+                        </button>
+
+                        <button
+                            class="btn btn-danger btn-sm"
+
+                            hx-post="{% url 'empleado_eliminar' empleado.id %}"
+
+                            hx-confirm="¿Desea eliminar este empleado?"
+
+                            hx-target="#contenido"
+
+                            hx-swap="innerHTML">
+
+                            <i class="bi bi-trash"></i>
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="10"
+                        class="text-center">
+
+                        No hay empleados registrados
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

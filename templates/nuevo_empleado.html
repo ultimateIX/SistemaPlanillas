@@ -1,0 +1,27 @@
+{% extends 'pages/base.html' %}
+
+{% block title %}
+Nuevo empleado
+{% endblock %}
+
+{% block content %}
+
+<div class="card p-4 shadow">
+
+    <h2 class="mb-4">Agregar empleado</h2>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button class="btn btn-success">
+            Guardar empleado
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

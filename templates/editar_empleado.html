@@ -1,0 +1,25 @@
+{% extends 'pages/base.html' %}
+
+{% block content %}
+
+<div class="card p-4 shadow">
+
+    <h2 class="mb-4">
+        Editar empleado
+    </h2>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button class="btn btn-success">
+            Guardar cambios
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
