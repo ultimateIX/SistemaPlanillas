@@ -1,0 +1,69 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>Historial de Cambios</h2>
+
+</div>
+
+<div class="card">
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Módulo</th>
+                        <th>Acción</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for cambio in cambios %}
+
+                    <tr>
+                        <td>{{ cambio.fecha|date:"d/m/Y H:i" }}</td>
+
+                        <td>
+                            {% if cambio.usuario %}
+                                {{ cambio.usuario.username }}
+                            {% else %}
+                                Sistema
+                            {% endif %}
+                        </td>
+
+                        <td>{{ cambio.get_modulo_display }}</td>
+
+                        <td>
+                            <span class="badge bg-primary">
+                                {{ cambio.get_accion_display }}
+                            </span>
+                        </td>
+
+                        <td>{{ cambio.descripcion }}</td>
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5">
+                            No hay cambios registrados.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

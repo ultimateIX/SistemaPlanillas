@@ -1,42 +1,39 @@
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
+
+from auditoria.utils import registrar_historial
 
 from .forms import EmpleadoForm
 from .models import Empleado
 
 
-# ==========================================
-# LISTAR EMPLEADOS
-# ==========================================
+def es_htmx(request):
 
+    return request.headers.get("HX-Request")
+
+
+@login_required
 def empleados(request):
 
-    empleados = Empleado.objects.filter(
-        activo=True
-    )
+    empleados = Empleado.objects.all()
 
-    contexto = {
-        "empleados": empleados
-    }
+    template = "empleados/empleados.html"
 
-    if request.headers.get("HX-Request"):
+    if es_htmx(request):
 
-        return render(
-            request,
-            "empleados/lista_content.html",
-            contexto
-        )
+        template = "empleados/lista_content.html"
 
     return render(
         request,
-        "empleados/empleados.html",
-        contexto
+        template,
+        {
+            "empleados": empleados
+        }
     )
 
 
-# ==========================================
-# CREAR EMPLEADO
-# ==========================================
-
+@login_required
 def empleado_crear(request):
 
     if request.method == "POST":
@@ -47,11 +44,16 @@ def empleado_crear(request):
 
         if form.is_valid():
 
-            form.save()
+            empleado = form.save()
 
-            empleados = Empleado.objects.filter(
-                activo=True
+            registrar_historial(
+                request,
+                "EMPLEADOS",
+                "CREAR",
+                f"Se creó el empleado {empleado.nombre_completo}."
             )
+
+            empleados = Empleado.objects.all()
 
             response = render(
                 request,
@@ -61,7 +63,7 @@ def empleado_crear(request):
                 }
             )
 
-            response["HX-Trigger"] = "empleadoGuardado"
+            response["HX-Trigger"] = "cerrarModalInventario"
 
             return response
 
@@ -78,13 +80,11 @@ def empleado_crear(request):
     )
 
 
-# ==========================================
-# EDITAR EMPLEADO
-# ==========================================
-
+@login_required
 def empleado_editar(request, id):
 
-    empleado = Empleado.objects.get(
+    empleado = get_object_or_404(
+        Empleado,
         id=id
     )
 
@@ -97,11 +97,16 @@ def empleado_editar(request, id):
 
         if form.is_valid():
 
-            form.save()
+            empleado = form.save()
 
-            empleados = Empleado.objects.filter(
-                activo=True
+            registrar_historial(
+                request,
+                "EMPLEADOS",
+                "EDITAR",
+                f"Se editó el empleado {empleado.nombre_completo}."
             )
+
+            empleados = Empleado.objects.all()
 
             response = render(
                 request,
@@ -111,7 +116,7 @@ def empleado_editar(request, id):
                 }
             )
 
-            response["HX-Trigger"] = "empleadoGuardado"
+            response["HX-Trigger"] = "cerrarModalInventario"
 
             return response
 
@@ -130,13 +135,11 @@ def empleado_editar(request, id):
     )
 
 
-# ==========================================
-# ELIMINAR EMPLEADO
-# ==========================================
-
+@login_required
 def empleado_eliminar(request, id):
 
-    empleado = Empleado.objects.get(
+    empleado = get_object_or_404(
+        Empleado,
         id=id
     )
 
@@ -144,9 +147,14 @@ def empleado_eliminar(request, id):
 
     empleado.save()
 
-    empleados = Empleado.objects.filter(
-        activo=True
+    registrar_historial(
+        request,
+        "EMPLEADOS",
+        "ELIMINAR",
+        f"Se desactivó el empleado {empleado.nombre_completo}."
     )
+
+    empleados = Empleado.objects.all()
 
     return render(
         request,

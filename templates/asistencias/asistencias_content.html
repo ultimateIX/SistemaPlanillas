@@ -1,0 +1,92 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>Asistencias</h2>
+
+    <button
+        class="btn btn-primary"
+        hx-get="{% url 'asistencia_crear' %}"
+        hx-target="#modal-container"
+        hx-swap="innerHTML">
+
+        Nuevo Registro
+
+    </button>
+
+</div>
+
+<div class="card">
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Observación</th>
+                        <th>Acciones</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for asistencia in asistencias %}
+
+                    <tr>
+                        <td>{{ asistencia.empleado.nombre_completo }}</td>
+                        <td>{{ asistencia.fecha|date:"d/m/Y" }}</td>
+
+                        <td>
+                            {% if asistencia.estado == "PRESENTE" %}
+                                <span class="badge bg-success">Presente</span>
+                            {% elif asistencia.estado == "AUSENTE" %}
+                                <span class="badge bg-danger">Ausente</span>
+                            {% elif asistencia.estado == "PERMISO" %}
+                                <span class="badge bg-info">Permiso</span>
+                            {% elif asistencia.estado == "INCAPACIDAD" %}
+                                <span class="badge bg-warning">Incapacidad</span>
+                            {% else %}
+                                <span class="badge bg-primary">Vacación</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ asistencia.observacion|default:"-" }}</td>
+
+                        <td>
+                            <button
+                                class="btn btn-warning btn-sm"
+                                hx-get="{% url 'asistencia_editar' asistencia.id %}"
+                                hx-target="#modal-container"
+                                hx-swap="innerHTML">
+
+                                Editar
+
+                            </button>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5">
+                            No hay registros de asistencia.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

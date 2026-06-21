@@ -1,21 +1,12 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <h2>
-
-        Empleados
-
-    </h2>
+    <h2>Empleados</h2>
 
     <button
-        class="btn btn-primary shadow-sm"
-
+        class="btn btn-primary"
         hx-get="{% url 'empleado_crear' %}"
-
         hx-target="#modal-container"
-
         hx-swap="innerHTML">
-
-        <i class="bi bi-plus-circle"></i>
 
         Nuevo Empleado
 
@@ -27,148 +18,90 @@
 
     <div class="card-body">
 
-        <table class="table table-hover align-middle">
-
-            <thead>
-
-                <tr>
-
-                    <th>DUI</th>
-
-                    <th>Nombre</th>
-
-                    <th>ISSS</th>
-
-                    <th>Teléfono</th>
-
-                    <th>Correo</th>
-
-                    <th>Cargo</th>
-
-                    <th>Ingreso</th>
-
-                    <th>Antigüedad</th>
-
-                    <th>Salario</th>
-
-                    <th>Acciones</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for empleado in empleados %}
-
-                <tr>
-
-                    <td>
-
-                        {{ empleado.dui }}
-
-                    </td>
-
-                    <td>
-
-                        {{ empleado.nombre_completo }}
-
-                    </td>
-
-                    <td>
-
-                        {{ empleado.numero_isss }}
-
-                    </td>
-
-                    <td>
-
-                        {{ empleado.telefono }}
-
-                    </td>
-
-                    <td>
-
-                        {{ empleado.correo|default:"-" }}
-
-                    </td>
-
-                    <td>
-
-                        {{ empleado.cargo|default:"-" }}
-
-                    </td>
-
-                    <td>
-
-                        {{ empleado.fecha_ingreso|date:"d/m/Y" }}
-
-                    </td>
-
-                    <td>
-
-                        {{ empleado.antiguedad }} años
-
-                    </td>
-
-                    <td>
-
-                        ${{ empleado.salario_mensual|floatformat:2 }}
-
-                    </td>
-
-                    <td>
-
-                        <button
-                            class="btn btn-warning btn-sm"
-
-                            hx-get="{% url 'empleado_editar' empleado.id %}"
-
-                            hx-target="#modal-container"
-
-                            hx-swap="innerHTML">
-
-                            <i class="bi bi-pencil"></i>
-
-                        </button>
-
-                        <button
-                            class="btn btn-danger btn-sm"
-
-                            hx-post="{% url 'empleado_eliminar' empleado.id %}"
-
-                            hx-confirm="¿Desea eliminar este empleado?"
-
-                            hx-target="#contenido"
-
-                            hx-swap="innerHTML">
-
-                            <i class="bi bi-trash"></i>
-
-                        </button>
-
-                    </td>
-
-                </tr>
-
-                {% empty %}
-
-                <tr>
-
-                    <td colspan="10"
-                        class="text-center">
-
-                        No hay empleados registrados
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+                        <th>Nombre</th>
+                        <th>DUI</th>
+                        <th>ISSS</th>
+                        <th>Teléfono</th>
+                        <th>Cargo</th>
+                        <th>Salario</th>
+                        <th>Contrato</th>
+                        <th>Jornada</th>
+                        <th>Fecha Ingreso</th>
+                        <th>Activo</th>
+                        <th>Acciones</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for empleado in empleados %}
+
+                    <tr>
+                        <td>{{ empleado.nombre_completo }}</td>
+                        <td>{{ empleado.dui }}</td>
+                        <td>{{ empleado.numero_isss }}</td>
+                        <td>{{ empleado.telefono }}</td>
+                        <td>{{ empleado.cargo }}</td>
+                        <td>${{ empleado.salario_mensual|floatformat:2 }}</td>
+                        <td>{{ empleado.get_tipo_contrato_display }}</td>
+                        <td>{{ empleado.get_jornada_display }}</td>
+                        <td>{{ empleado.fecha_ingreso|date:"d/m/Y" }}</td>
+
+                        <td>
+                            {% if empleado.activo %}
+                                <span class="badge bg-success">Sí</span>
+                            {% else %}
+                                <span class="badge bg-danger">No</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <button
+                                class="btn btn-warning btn-sm"
+                                hx-get="{% url 'empleado_editar' empleado.id %}"
+                                hx-target="#modal-container"
+                                hx-swap="innerHTML">
+
+                                Editar
+
+                            </button>
+
+                            <button
+                                class="btn btn-danger btn-sm"
+                                hx-post="{% url 'empleado_eliminar' empleado.id %}"
+                                hx-target="#contenido"
+                                hx-swap="innerHTML"
+                                hx-confirm="¿Deseas desactivar este empleado?">
+
+                                Eliminar
+
+                            </button>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="11">
+                            No hay empleados registrados.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 

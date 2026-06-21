@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 
+from auditoria.utils import registrar_historial
+
 from .forms import (
     CompraForm,
     ProductoForm,
@@ -59,11 +61,19 @@ def producto_crear(request):
             producto = form.save(
                 commit=False
             )
+
             producto.activo = True
 
             producto.existencia_actual = existencia_inicial
 
             producto.save()
+
+            registrar_historial(
+                request,
+                "PRODUCTOS",
+                "CREAR",
+                f"Se creó el producto {producto.nombre}."
+            )
 
             if existencia_inicial > 0:
 
@@ -79,6 +89,16 @@ def producto_crear(request):
                     existencia_anterior=0,
                     existencia_nueva=existencia_inicial,
                     descripcion="Existencia inicial"
+                )
+
+                registrar_historial(
+                    request,
+                    "COMPRAS",
+                    "REGISTRAR",
+                    (
+                        f"Se registró existencia inicial de "
+                        f"{existencia_inicial} unidades para {producto.nombre}."
+                    )
                 )
 
             productos = Producto.objects.all()
@@ -134,6 +154,13 @@ def producto_editar(request, id):
             )
 
             producto_editado.save()
+
+            registrar_historial(
+                request,
+                "PRODUCTOS",
+                "EDITAR",
+                f"Se editó el producto {producto_editado.nombre}."
+            )
 
             productos = Producto.objects.all()
 
@@ -237,6 +264,16 @@ def registrar_compra(request):
 
             producto.save()
 
+            registrar_historial(
+                request,
+                "COMPRAS",
+                "REGISTRAR",
+                (
+                    f"Se registró compra de {cantidad} unidades "
+                    f"del producto {producto.nombre}."
+                )
+            )
+
     form = CompraForm()
 
     movimientos = MovimientoInventario.objects.filter(
@@ -326,6 +363,16 @@ def registrar_venta(request):
                 producto.precio_venta = precio
 
                 producto.save()
+
+                registrar_historial(
+                    request,
+                    "VENTAS",
+                    "REGISTRAR",
+                    (
+                        f"Se registró venta de {cantidad} unidades "
+                        f"del producto {producto.nombre}."
+                    )
+                )
 
     form = VentaForm()
 

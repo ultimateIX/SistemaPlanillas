@@ -5,6 +5,8 @@ from decimal import Decimal
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 
+from auditoria.utils import registrar_historial
+
 from empleados.models import Empleado
 
 from .forms import (
@@ -605,6 +607,17 @@ def generar_planilla(request):
 
     planilla.save()
 
+    registrar_historial(
+        request,
+        "PLANILLAS",
+        "GENERAR",
+        (
+            f"Se generó planilla del período "
+            f"{fecha_inicio.strftime('%d/%m/%Y')} al "
+            f"{fecha_fin.strftime('%d/%m/%Y')}."
+        )
+    )
+
     return render(
         request,
         "planillas/lista_content.html",
@@ -703,6 +716,13 @@ def configuracion(request):
 
             form.save()
 
+            registrar_historial(
+                request,
+                "CONFIGURACION",
+                "EDITAR",
+                "Se actualizó la configuración general de planillas."
+            )
+
     else:
 
         form = ConfiguracionPlanillaForm(
@@ -753,7 +773,17 @@ def isr_crear(request):
 
         if form.is_valid():
 
-            form.save()
+            tramo = form.save()
+
+            registrar_historial(
+                request,
+                "CONFIGURACION",
+                "CREAR",
+                (
+                    f"Se creó tramo ISR desde "
+                    f"{tramo.desde} hasta {tramo.hasta}."
+                )
+            )
 
             return render(
                 request,
@@ -792,7 +822,17 @@ def isr_editar(request, id):
 
         if form.is_valid():
 
-            form.save()
+            tramo = form.save()
+
+            registrar_historial(
+                request,
+                "CONFIGURACION",
+                "EDITAR",
+                (
+                    f"Se editó tramo ISR desde "
+                    f"{tramo.desde} hasta {tramo.hasta}."
+                )
+            )
 
             return render(
                 request,
@@ -846,7 +886,17 @@ def aguinaldo_crear(request):
 
         if form.is_valid():
 
-            form.save()
+            tramo = form.save()
+
+            registrar_historial(
+                request,
+                "CONFIGURACION",
+                "CREAR",
+                (
+                    f"Se creó tramo de aguinaldo "
+                    f"con {tramo.dias_aguinaldo} días."
+                )
+            )
 
             return render(
                 request,
@@ -885,7 +935,17 @@ def aguinaldo_editar(request, id):
 
         if form.is_valid():
 
-            form.save()
+            tramo = form.save()
+
+            registrar_historial(
+                request,
+                "CONFIGURACION",
+                "EDITAR",
+                (
+                    f"Se editó tramo de aguinaldo "
+                    f"con {tramo.dias_aguinaldo} días."
+                )
+            )
 
             return render(
                 request,
@@ -983,6 +1043,13 @@ def cargar_tablas_legales(request):
             dias_aguinaldo=Decimal("21.00"),
             orden=4
         )
+
+    registrar_historial(
+        request,
+        "CONFIGURACION",
+        "REGISTRAR",
+        "Se cargaron las tablas legales por defecto."
+    )
 
     configuracion = ConfiguracionPlanilla.objects.first()
 
