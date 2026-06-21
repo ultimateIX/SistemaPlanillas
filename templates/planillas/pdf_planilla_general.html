@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        h2 {
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #eeeeee;
+            font-weight: bold;
+        }
+
+        th,
+        td {
+            border: 1px solid #444444;
+            padding: 4px;
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .resumen {
+            margin-bottom: 15px;
+        }
+
+        .totales {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+{% load static %}
+<body>
+<div style="text-align:center; margin-bottom: 15px;">
+    <img
+        src="{% static 'img/logo.png' %}"
+        style="width: 250px; height: auto;">
+</div>
+    <h1>Planilla General</h1>
+
+    <table class="resumen">
+        <tr>
+            <td>
+                <strong>Planilla:</strong>
+                #{{ planilla.id }}
+            </td>
+
+            <td>
+                <strong>Periodo Inicio:</strong>
+                {{ planilla.periodo_inicio|date:"d/m/Y" }}
+            </td>
+
+            <td>
+                <strong>Periodo Fin:</strong>
+                {{ planilla.periodo_fin|date:"d/m/Y" }}
+            </td>
+
+            <td>
+                <strong>Total Planilla:</strong>
+                ${{ planilla.total_planilla|floatformat:2 }}
+            </td>
+        </tr>
+    </table>
+
+    <h2>Detalle de Empleados</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Empleado</th>
+                <th>Salario</th>
+                <th>H. Extra</th>
+                <th>Vac.</th>
+                <th>Aguinaldo</th>
+                <th>Q25</th>
+                <th>Total Dev.</th>
+                <th>ISSS</th>
+                <th>AFP</th>
+                <th>Renta</th>
+                <th>Total Desc.</th>
+                <th>Líquido</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for detalle in detalles %}
+            <tr>
+                <td class="text-left">
+                    {{ detalle.empleado.nombre_completo }}
+                </td>
+                <td>${{ detalle.salario_quincenal|floatformat:2 }}</td>
+                <td>${{ detalle.horas_extra_diurnas|floatformat:2 }}</td>
+                <td>${{ detalle.vacaciones|floatformat:2 }}</td>
+                <td>${{ detalle.aguinaldo|floatformat:2 }}</td>
+                <td>${{ detalle.quincena_25|floatformat:2 }}</td>
+                <td>${{ detalle.total_devengado|floatformat:2 }}</td>
+                <td>${{ detalle.isss_empleado|floatformat:2 }}</td>
+                <td>${{ detalle.afp_empleado|floatformat:2 }}</td>
+                <td>${{ detalle.renta|floatformat:2 }}</td>
+                <td>${{ detalle.total_descuentos|floatformat:2 }}</td>
+                <td>${{ detalle.liquido_pagar|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Totales</h2>
+
+    <table class="totales">
+        <tr>
+            <th>Salarios</th>
+            <th>Horas Extra</th>
+            <th>Vacaciones</th>
+            <th>Aguinaldo</th>
+            <th>Quincena 25</th>
+            <th>Total Devengado</th>
+        </tr>
+
+        <tr>
+            <td>${{ totales.salario_quincenal|floatformat:2 }}</td>
+            <td>${{ totales.horas_extra_diurnas|floatformat:2 }}</td>
+            <td>${{ totales.vacaciones|floatformat:2 }}</td>
+            <td>${{ totales.aguinaldo|floatformat:2 }}</td>
+            <td>${{ totales.quincena_25|floatformat:2 }}</td>
+            <td>${{ totales.total_devengado|floatformat:2 }}</td>
+        </tr>
+
+        <tr>
+            <th>ISSS</th>
+            <th>AFP</th>
+            <th>Renta</th>
+            <th>Total Descuentos</th>
+            <th>Líquido</th>
+            <th>Costo Patronal</th>
+        </tr>
+
+        <tr>
+            <td>${{ totales.isss_empleado|floatformat:2 }}</td>
+            <td>${{ totales.afp_empleado|floatformat:2 }}</td>
+            <td>${{ totales.renta|floatformat:2 }}</td>
+            <td>${{ totales.total_descuentos|floatformat:2 }}</td>
+            <td>${{ totales.liquido_pagar|floatformat:2 }}</td>
+            <td>${{ totales.costo_patronal|floatformat:2 }}</td>
+        </tr>
+    </table>
+
+</body>
+</html>

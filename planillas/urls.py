@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from . import pdf_views
 
 
 urlpatterns = [
@@ -75,6 +76,18 @@ urlpatterns = [
         "cargar-tablas/",
         views.cargar_tablas_legales,
         name="cargar_tablas_legales"
+    ),
+
+    path(
+        "pdf/general/<int:id>/",
+        pdf_views.pdf_planilla_general,
+        name="pdf_planilla_general"
+    ),
+
+    path(
+        "pdf/boleta/<int:id>/",
+        pdf_views.pdf_boleta_empleado,
+        name="pdf_boleta_empleado"
     ),
 
 ]

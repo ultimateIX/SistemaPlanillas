@@ -13,7 +13,14 @@
         ← Volver
 
     </button>
+    <a
+    class="btn btn-danger"
+    href="{% url 'pdf_planilla_general' planilla.id %}"
+    target="_blank">
 
+    Descargar PDF
+
+</a>
 </div>
 
 <div class="card mb-4">
@@ -81,6 +88,7 @@
                         <th>ISSS Pat.</th>
                         <th>AFP Pat.</th>
                         <th>Costo Pat.</th>
+                        <th>Boleta</th>
                     </tr>
 
                 </thead>
@@ -105,6 +113,7 @@
                         <td>${{ detalle.isss_patronal|floatformat:2 }}</td>
                         <td>${{ detalle.afp_patronal|floatformat:2 }}</td>
                         <td><strong>${{ detalle.costo_patronal|floatformat:2 }}</strong></td>
+                        <td><a class="btn btn-outline-danger btn-sm" href="{% url 'pdf_boleta_empleado' detalle.id %}" target="_blank"> PDF </a></td>
                     </tr>
 
                     {% empty %}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin-top: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+        }
+
+        th {
+            background-color: #eeeeee;
+            font-weight: bold;
+        }
+
+        th,
+        td {
+            border: 1px solid #444444;
+            padding: 6px;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .total {
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #eeeeee;
+        }
+
+     .firma {
+    margin-top: 180px;
+    text-align: center;
+}
+
+.linea {
+    border-top: 1px solid #000000;
+    width: 320px;
+    margin: 0 auto;
+    padding-top: 10px;
+    font-size: 11px;
+}
+    </style>
+</head>
+{% load static %}
+<body>
+<div style="text-align:center; margin-bottom: 15px;">
+    <img
+        src="{% static 'img/logo.png' %}"
+        style="width: 250px; height: auto;">
+</div>
+    <h1>Boleta de Pago</h1>
+
+    <table>
+        <tr>
+            <td>
+                <strong>Empleado:</strong>
+                {{ empleado.nombre_completo }}
+            </td>
+
+            <td>
+                <strong>DUI:</strong>
+                {{ empleado.dui }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <strong>Cargo:</strong>
+                {{ empleado.cargo|default:"-" }}
+            </td>
+
+            <td>
+                <strong>Periodo:</strong>
+                {{ planilla.periodo_inicio|date:"d/m/Y" }}
+                -
+                {{ planilla.periodo_fin|date:"d/m/Y" }}
+            </td>
+        </tr>
+    </table>
+
+    <h2>Ingresos</h2>
+
+    <table>
+        <tr>
+            <th>Concepto</th>
+            <th class="text-right">Monto</th>
+        </tr>
+
+        <tr>
+            <td>Salario Quincenal</td>
+            <td class="text-right">
+                ${{ detalle.salario_quincenal|floatformat:2 }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Horas Extra Diurnas</td>
+            <td class="text-right">
+                ${{ detalle.horas_extra_diurnas|floatformat:2 }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Vacaciones</td>
+            <td class="text-right">
+                ${{ detalle.vacaciones|floatformat:2 }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Aguinaldo</td>
+            <td class="text-right">
+                ${{ detalle.aguinaldo|floatformat:2 }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Quincena 25</td>
+            <td class="text-right">
+                ${{ detalle.quincena_25|floatformat:2 }}
+            </td>
+        </tr>
+
+        <tr class="total">
+            <td>Total Devengado</td>
+            <td class="text-right">
+                ${{ detalle.total_devengado|floatformat:2 }}
+            </td>
+        </tr>
+    </table>
+
+    <h2>Descuentos del Empleado</h2>
+
+    <table>
+        <tr>
+            <th>Concepto</th>
+            <th class="text-right">Monto</th>
+        </tr>
+
+        <tr>
+            <td>ISSS</td>
+            <td class="text-right">
+                ${{ detalle.isss_empleado|floatformat:2 }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>AFP</td>
+            <td class="text-right">
+                ${{ detalle.afp_empleado|floatformat:2 }}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Renta</td>
+            <td class="text-right">
+                ${{ detalle.renta|floatformat:2 }}
+            </td>
+        </tr>
+
+        <tr class="total">
+            <td>Total Descuentos</td>
+            <td class="text-right">
+                ${{ detalle.total_descuentos|floatformat:2 }}
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr class="total">
+            <td>Líquido a Pagar</td>
+            <td class="text-right">
+                ${{ detalle.liquido_pagar|floatformat:2 }}
+            </td>
+        </tr>
+    </table>
+<table style="border: none; margin-top: 55px; width: 100%;">
+
+    <tr>
+        <td style="border: none; text-align: center;">
+
+            <div style="border-top: 1px solid #000000; width: 320px; margin: 0 auto; padding-top: 8px;">
+                Firma del Empleado
+            </div>
+
+        </td>
+    </tr>
+
+</table>
+
+</body>
+</html>
