@@ -35,10 +35,6 @@ urlpatterns = [
         name="configuracion"
     ),
 
-    # ==================================
-    # ISR
-    # ==================================
-
     path(
         "isr/",
         views.isr,
@@ -56,10 +52,6 @@ urlpatterns = [
         views.isr_editar,
         name="isr_editar"
     ),
-
-    # ==================================
-    # AGUINALDO
-    # ==================================
 
     path(
         "aguinaldo/",
@@ -79,10 +71,10 @@ urlpatterns = [
         name="aguinaldo_editar"
     ),
 
-    # ==================================
-    # CARGA INICIAL
-    # ==================================
-
-  
+    path(
+        "cargar-tablas/",
+        views.cargar_tablas_legales,
+        name="cargar_tablas_legales"
+    ),
 
 ]

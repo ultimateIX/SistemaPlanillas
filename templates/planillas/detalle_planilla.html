@@ -1,29 +1,20 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
     <h2>
-
         Detalle Planilla #{{ planilla.id }}
-
     </h2>
 
     <button
         class="btn btn-secondary"
-
         hx-get="{% url 'planillas' %}"
-
         hx-target="#contenido"
-
         hx-swap="innerHTML">
 
-        <i class="bi bi-arrow-left"></i>
-
-        Volver
+        ← Volver
 
     </button>
 
 </div>
-
-<!-- RESUMEN -->
 
 <div class="card mb-4">
 
@@ -34,9 +25,7 @@
             <div class="col-md-4">
 
                 <strong>Periodo Inicio</strong>
-
                 <br>
-
                 {{ planilla.periodo_inicio|date:"d/m/Y" }}
 
             </div>
@@ -44,9 +33,7 @@
             <div class="col-md-4">
 
                 <strong>Periodo Fin</strong>
-
                 <br>
-
                 {{ planilla.periodo_fin|date:"d/m/Y" }}
 
             </div>
@@ -54,10 +41,11 @@
             <div class="col-md-4">
 
                 <strong>Total Planilla</strong>
-
                 <br>
 
-                ${{ planilla.total_planilla|floatformat:2 }}
+                <span class="badge bg-success fs-6">
+                    ${{ planilla.total_planilla|floatformat:2 }}
+                </span>
 
             </div>
 
@@ -66,8 +54,6 @@
     </div>
 
 </div>
-
-<!-- DETALLE -->
 
 <div class="card">
 
@@ -80,39 +66,21 @@
                 <thead>
 
                     <tr>
-
                         <th>Empleado</th>
-
                         <th>Salario</th>
-
                         <th>Horas Extra</th>
-
-                        <th>Bonificaciones</th>
-
                         <th>Vacaciones</th>
-
                         <th>Aguinaldo</th>
-
                         <th>Quincena 25</th>
-
-                        <th>Total Devengado</th>
-
+                        <th>Total Dev.</th>
                         <th>ISSS</th>
-
                         <th>AFP</th>
-
                         <th>Renta</th>
-
                         <th>Total Desc.</th>
-
                         <th>Líquido</th>
-
                         <th>ISSS Pat.</th>
-
                         <th>AFP Pat.</th>
-
-                        <th>Costo Patronal</th>
-
+                        <th>Costo Pat.</th>
                     </tr>
 
                 </thead>
@@ -122,119 +90,29 @@
                     {% for detalle in detalles %}
 
                     <tr>
+                        <td>{{ detalle.empleado.nombre_completo }}</td>
+                        <td>${{ detalle.salario_quincenal|floatformat:2 }}</td>
+                        <td>${{ detalle.horas_extra_diurnas|floatformat:2 }}</td>
+                        <td>${{ detalle.vacaciones|floatformat:2 }}</td>
+                        <td>${{ detalle.aguinaldo|floatformat:2 }}</td>
+                        <td>${{ detalle.quincena_25|floatformat:2 }}</td>
+                        <td><strong>${{ detalle.total_devengado|floatformat:2 }}</strong></td>
+                        <td>${{ detalle.isss_empleado|floatformat:2 }}</td>
+                        <td>${{ detalle.afp_empleado|floatformat:2 }}</td>
+                        <td><span class="badge bg-danger">${{ detalle.renta|floatformat:2 }}</span></td>
+                        <td><strong>${{ detalle.total_descuentos|floatformat:2 }}</strong></td>
+                        <td><span class="badge bg-success">${{ detalle.liquido_pagar|floatformat:2 }}</span></td>
+                        <td>${{ detalle.isss_patronal|floatformat:2 }}</td>
+                        <td>${{ detalle.afp_patronal|floatformat:2 }}</td>
+                        <td><strong>${{ detalle.costo_patronal|floatformat:2 }}</strong></td>
+                    </tr>
 
-                        <td>
+                    {% empty %}
 
-                            {{ detalle.empleado.nombre_completo }}
-
+                    <tr>
+                        <td colspan="15">
+                            No hay detalles para esta planilla.
                         </td>
-
-                        <td>
-
-                            ${{ detalle.salario_quincenal|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.horas_extra_diurnas|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.bonificaciones|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.vacaciones|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.aguinaldo|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.quincena_25|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            <strong>
-
-                                ${{ detalle.total_devengado|floatformat:2 }}
-
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.isss_empleado|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.afp_empleado|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.renta|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            <strong>
-
-                                ${{ detalle.total_descuentos|floatformat:2 }}
-
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-success">
-
-                                ${{ detalle.liquido_pagar|floatformat:2 }}
-
-                            </span>
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.isss_patronal|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            ${{ detalle.afp_patronal|floatformat:2 }}
-
-                        </td>
-
-                        <td>
-
-                            <strong>
-
-                                ${{ detalle.costo_patronal|floatformat:2 }}
-
-                            </strong>
-
-                        </td>
-
                     </tr>
 
                     {% endfor %}
@@ -242,6 +120,98 @@
                 </tbody>
 
             </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card mt-4">
+
+    <div class="card-header">
+
+        <strong>Totales de la Planilla</strong>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+                <strong>Total Salarios</strong>
+                <br>
+                ${{ totales.salario_quincenal|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Horas Extra</strong>
+                <br>
+                ${{ totales.horas_extra_diurnas|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Vacaciones</strong>
+                <br>
+                ${{ totales.vacaciones|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Aguinaldo</strong>
+                <br>
+                ${{ totales.aguinaldo|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Quincena 25</strong>
+                <br>
+                ${{ totales.quincena_25|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Devengado</strong>
+                <br>
+                ${{ totales.total_devengado|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total ISSS</strong>
+                <br>
+                ${{ totales.isss_empleado|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total AFP</strong>
+                <br>
+                ${{ totales.afp_empleado|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Renta</strong>
+                <br>
+                ${{ totales.renta|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Descuentos</strong>
+                <br>
+                ${{ totales.total_descuentos|floatformat:2 }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Líquido</strong>
+                <br>
+                <span class="badge bg-success fs-6">
+                    ${{ totales.liquido_pagar|floatformat:2 }}
+                </span>
+            </div>
+
+            <div class="col-md-3">
+                <strong>Total Costo Patronal</strong>
+                <br>
+                ${{ totales.costo_patronal|floatformat:2 }}
+            </div>
 
         </div>
 

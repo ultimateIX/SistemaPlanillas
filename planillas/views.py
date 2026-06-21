@@ -1,3 +1,5 @@
+from datetime import date
+from datetime import timedelta
 from decimal import Decimal
 
 from django.shortcuts import get_object_or_404
@@ -20,16 +22,332 @@ from .models import (
 )
 
 
-# ==========================================
-# PLANILLAS
-# ==========================================
+def calcular_isr_quincenal(base_gravada):
+
+    if base_gravada <= Decimal("0.00"):
+
+        return Decimal("0.00")
+
+    tramo = TramoISR.objects.filter(
+        periodo="QUINCENAL",
+        desde__lte=base_gravada
+    ).filter(
+        hasta__gte=base_gravada
+    ).first()
+
+    if not tramo:
+
+        tramo = TramoISR.objects.filter(
+            periodo="QUINCENAL",
+            desde__lte=base_gravada,
+            hasta__isnull=True
+        ).first()
+
+    if not tramo:
+
+        return Decimal("0.00")
+
+    if tramo.porcentaje == 0:
+
+        return Decimal("0.00")
+
+    exceso = base_gravada - tramo.exceso_sobre
+
+    renta = (
+        tramo.cuota_fija
+        + (
+            exceso
+            * (
+                tramo.porcentaje
+                / Decimal("100")
+            )
+        )
+    )
+
+    return round(
+        renta,
+        2
+    )
+
+
+def calcular_horas_extra_diurnas(empleado, cantidad_horas):
+
+    if cantidad_horas <= Decimal("0.00"):
+
+        return Decimal("0.00")
+
+    if cantidad_horas > Decimal("88.00"):
+
+        cantidad_horas = Decimal("88.00")
+
+    salario_diario = (
+        Decimal(empleado.salario_mensual)
+        / Decimal("30")
+    )
+
+    salario_hora = (
+        salario_diario
+        / Decimal("8")
+    )
+
+    valor_hora_extra = (
+        salario_hora
+        * Decimal("2")
+    )
+
+    total_horas_extra = round(
+        valor_hora_extra * cantidad_horas,
+        2
+    )
+
+    return total_horas_extra
+
+
+def calcular_vacaciones(empleado, fecha_inicio, fecha_fin):
+
+    fecha_ingreso = empleado.fecha_ingreso
+
+    aniversario = date(
+        fecha_fin.year,
+        fecha_ingreso.month,
+        fecha_ingreso.day
+    )
+
+    limite_pago = fecha_fin + timedelta(
+        days=7
+    )
+
+    if aniversario < fecha_inicio:
+
+        return Decimal("0.00"), False
+
+    if aniversario > limite_pago:
+
+        return Decimal("0.00"), False
+
+    anios_laborados = (
+        aniversario.year
+        - fecha_ingreso.year
+    )
+
+    if anios_laborados < 1:
+
+        return Decimal("0.00"), False
+
+    ya_pagado = DetallePlanilla.objects.filter(
+        empleado=empleado,
+        aplico_vacaciones=True,
+        planilla__periodo_inicio__year=fecha_inicio.year
+    ).exists()
+
+    if ya_pagado:
+
+        return Decimal("0.00"), False
+
+    salario_diario = round(
+        Decimal(empleado.salario_mensual)
+        / Decimal("30"),
+        2
+    )
+
+    vacaciones_base = round(
+        salario_diario * Decimal("15"),
+        2
+    )
+
+    recargo_vacacional = round(
+        vacaciones_base * Decimal("0.30"),
+        2
+    )
+
+    total_vacaciones = round(
+        vacaciones_base + recargo_vacacional,
+        2
+    )
+
+    return total_vacaciones, True
+
+
+def calcular_aguinaldo(empleado, fecha_inicio, fecha_fin, configuracion):
+
+    if not (
+        fecha_inicio.month == 12
+        and fecha_inicio.day == 1
+        and fecha_fin.month == 12
+        and fecha_fin.day == 15
+    ):
+
+        return Decimal("0.00"), Decimal("0.00"), Decimal("0.00"), False
+
+    ya_pagado = DetallePlanilla.objects.filter(
+        empleado=empleado,
+        aplico_aguinaldo=True,
+        planilla__periodo_inicio__year=fecha_inicio.year
+    ).exists()
+
+    if ya_pagado:
+
+        return Decimal("0.00"), Decimal("0.00"), Decimal("0.00"), False
+
+    fecha_ingreso = empleado.fecha_ingreso
+
+    dias_trabajados = (
+        fecha_fin
+        - fecha_ingreso
+    ).days
+
+    if dias_trabajados < 0:
+
+        return Decimal("0.00"), Decimal("0.00"), Decimal("0.00"), False
+
+    anios_laborados = (
+        fecha_fin.year
+        - fecha_ingreso.year
+    )
+
+    if (
+        fecha_fin.month,
+        fecha_fin.day
+    ) < (
+        fecha_ingreso.month,
+        fecha_ingreso.day
+    ):
+
+        anios_laborados -= 1
+
+    tramo = TramoAguinaldo.objects.filter(
+        antiguedad_desde__lte=anios_laborados
+    ).filter(
+        antiguedad_hasta__gt=anios_laborados
+    ).first()
+
+    if not tramo:
+
+        tramo = TramoAguinaldo.objects.filter(
+            antiguedad_desde__lte=anios_laborados,
+            antiguedad_hasta__isnull=True
+        ).first()
+
+    if tramo:
+
+        dias_aguinaldo = tramo.dias_aguinaldo
+
+    else:
+
+        dias_aguinaldo = Decimal("15.00")
+
+    if anios_laborados < 1:
+
+        dias_aguinaldo = round(
+            (
+                Decimal(dias_trabajados)
+                / Decimal("365")
+            )
+            * dias_aguinaldo,
+            2
+        )
+
+    salario_diario = round(
+        Decimal(empleado.salario_mensual)
+        / Decimal("30"),
+        2
+    )
+
+    aguinaldo = round(
+        salario_diario * dias_aguinaldo,
+        2
+    )
+
+    if configuracion.aplicar_exencion_aguinaldo:
+
+        aguinaldo_exento = min(
+            aguinaldo,
+            configuracion.limite_exento_aguinaldo
+        )
+
+        aguinaldo_gravado = max(
+            aguinaldo - configuracion.limite_exento_aguinaldo,
+            Decimal("0.00")
+        )
+
+    else:
+
+        aguinaldo_exento = Decimal("0.00")
+
+        aguinaldo_gravado = aguinaldo
+
+    return aguinaldo, aguinaldo_exento, aguinaldo_gravado, True
+
+
+def calcular_quincena_25(empleado, fecha_inicio, fecha_fin, configuracion):
+
+    if not (
+        fecha_inicio.month == 1
+        and fecha_inicio.day == 1
+        and fecha_fin.month == 1
+        and fecha_fin.day == 15
+    ):
+
+        return Decimal("0.00"), False
+
+    if Decimal(empleado.salario_mensual) > Decimal("1500.00"):
+
+        return Decimal("0.00"), False
+
+    fecha_ingreso = empleado.fecha_ingreso
+
+    anios_laborados = (
+        fecha_inicio.year
+        - fecha_ingreso.year
+    )
+
+    if (
+        fecha_inicio.month,
+        fecha_inicio.day
+    ) < (
+        fecha_ingreso.month,
+        fecha_ingreso.day
+    ):
+
+        anios_laborados -= 1
+
+    if anios_laborados < configuracion.antiguedad_minima_quincena_25:
+
+        return Decimal("0.00"), False
+
+    ya_pagado = DetallePlanilla.objects.filter(
+        empleado=empleado,
+        aplico_quincena_25=True,
+        planilla__periodo_inicio__year=fecha_inicio.year
+    ).exists()
+
+    if ya_pagado:
+
+        return Decimal("0.00"), False
+
+    quincena_25 = round(
+        Decimal(empleado.salario_mensual)
+        * (
+            configuracion.porcentaje_quincena_25
+            / Decimal("100")
+        ),
+        2
+    )
+
+    return quincena_25, True
+
 
 def planillas(request):
 
     planillas = Planilla.objects.all()
 
+    empleados = Empleado.objects.filter(
+        activo=True
+    )
+
     contexto = {
-        "planillas": planillas
+        "planillas": planillas,
+        "empleados": empleados
     }
 
     if request.headers.get("HX-Request"):
@@ -47,14 +365,9 @@ def planillas(request):
     )
 
 
-# ==========================================
-# GENERAR PLANILLA
-# ==========================================
-
 def generar_planilla(request):
 
     inicio = request.GET.get("inicio")
-
     fin = request.GET.get("fin")
 
     if not inicio or not fin:
@@ -63,9 +376,20 @@ def generar_planilla(request):
             request,
             "planillas/lista_content.html",
             {
-                "planillas": Planilla.objects.all()
+                "planillas": Planilla.objects.all(),
+                "empleados": Empleado.objects.filter(
+                    activo=True
+                )
             }
         )
+
+    fecha_inicio = date.fromisoformat(
+        inicio
+    )
+
+    fecha_fin = date.fromisoformat(
+        fin
+    )
 
     configuracion = ConfiguracionPlanilla.objects.first()
 
@@ -75,6 +399,10 @@ def generar_planilla(request):
 
     empleados = Empleado.objects.filter(
         activo=True
+    )
+
+    empleados_con_horas_extra = request.GET.getlist(
+        "empleados_horas_extra"
     )
 
     planilla = Planilla.objects.create(
@@ -88,23 +416,61 @@ def generar_planilla(request):
     for empleado in empleados:
 
         salario_quincenal = round(
-            Decimal(empleado.salario_mensual) / 2,
+            Decimal(empleado.salario_mensual)
+            / Decimal("2"),
             2
         )
 
         horas_extra = Decimal("0.00")
 
+        if str(empleado.id) in empleados_con_horas_extra:
+
+            horas_extra_texto = request.GET.get(
+                f"horas_extra_{empleado.id}",
+                "0"
+            )
+
+            try:
+
+                cantidad_horas = Decimal(
+                    horas_extra_texto
+                )
+
+            except:
+
+                cantidad_horas = Decimal("0.00")
+
+            horas_extra = calcular_horas_extra_diurnas(
+                empleado,
+                cantidad_horas
+            )
+
         bonificaciones = Decimal("0.00")
 
-        vacaciones = Decimal("0.00")
+        vacaciones, aplico_vacaciones = calcular_vacaciones(
+            empleado,
+            fecha_inicio,
+            fecha_fin
+        )
 
-        aguinaldo = Decimal("0.00")
+        (
+            aguinaldo,
+            aguinaldo_exento,
+            aguinaldo_gravado,
+            aplico_aguinaldo
+        ) = calcular_aguinaldo(
+            empleado,
+            fecha_inicio,
+            fecha_fin,
+            configuracion
+        )
 
-        aguinaldo_exento = Decimal("0.00")
-
-        aguinaldo_gravado = Decimal("0.00")
-
-        quincena_25 = Decimal("0.00")
+        quincena_25, aplico_quincena_25 = calcular_quincena_25(
+            empleado,
+            fecha_inicio,
+            fecha_fin,
+            configuracion
+        )
 
         total_devengado = (
             salario_quincenal
@@ -121,7 +487,7 @@ def generar_planilla(request):
         )
 
         base_isss_quincenal = round(
-            base_isss / 2,
+            base_isss / Decimal("2"),
             2
         )
 
@@ -167,14 +533,24 @@ def generar_planilla(request):
                 + horas_extra
                 + bonificaciones
                 + vacaciones
-                + aguinaldo_gravado
             )
             - isss_empleado
             - afp_empleado,
             2
         )
 
-        renta = Decimal("0.00")
+        renta_normal = calcular_isr_quincenal(
+            base_gravada_isr
+        )
+
+        renta_aguinaldo = calcular_isr_quincenal(
+            aguinaldo_gravado
+        )
+
+        renta = round(
+            renta_normal + renta_aguinaldo,
+            2
+        )
 
         total_descuentos = (
             isss_empleado
@@ -214,9 +590,9 @@ def generar_planilla(request):
             isss_patronal=isss_patronal,
             afp_patronal=afp_patronal,
             costo_patronal=costo_patronal,
-            aplico_aguinaldo=False,
-            aplico_quincena_25=False,
-            aplico_vacaciones=False,
+            aplico_aguinaldo=aplico_aguinaldo,
+            aplico_quincena_25=aplico_quincena_25,
+            aplico_vacaciones=aplico_vacaciones,
             liquido_pagar=liquido_pagar
         )
 
@@ -230,14 +606,13 @@ def generar_planilla(request):
         request,
         "planillas/lista_content.html",
         {
-            "planillas": Planilla.objects.all()
+            "planillas": Planilla.objects.all(),
+            "empleados": Empleado.objects.filter(
+                activo=True
+            )
         }
     )
 
-
-# ==========================================
-# DETALLE PLANILLA
-# ==========================================
 
 def detalle_planilla(request, id):
 
@@ -250,19 +625,50 @@ def detalle_planilla(request, id):
         planilla=planilla
     )
 
+    totales = {
+        "salario_quincenal": Decimal("0.00"),
+        "horas_extra_diurnas": Decimal("0.00"),
+        "vacaciones": Decimal("0.00"),
+        "aguinaldo": Decimal("0.00"),
+        "quincena_25": Decimal("0.00"),
+        "total_devengado": Decimal("0.00"),
+        "isss_empleado": Decimal("0.00"),
+        "afp_empleado": Decimal("0.00"),
+        "renta": Decimal("0.00"),
+        "total_descuentos": Decimal("0.00"),
+        "liquido_pagar": Decimal("0.00"),
+        "isss_patronal": Decimal("0.00"),
+        "afp_patronal": Decimal("0.00"),
+        "costo_patronal": Decimal("0.00"),
+    }
+
+    for detalle in detalles:
+
+        totales["salario_quincenal"] += detalle.salario_quincenal
+        totales["horas_extra_diurnas"] += detalle.horas_extra_diurnas
+        totales["vacaciones"] += detalle.vacaciones
+        totales["aguinaldo"] += detalle.aguinaldo
+        totales["quincena_25"] += detalle.quincena_25
+        totales["total_devengado"] += detalle.total_devengado
+        totales["isss_empleado"] += detalle.isss_empleado
+        totales["afp_empleado"] += detalle.afp_empleado
+        totales["renta"] += detalle.renta
+        totales["total_descuentos"] += detalle.total_descuentos
+        totales["liquido_pagar"] += detalle.liquido_pagar
+        totales["isss_patronal"] += detalle.isss_patronal
+        totales["afp_patronal"] += detalle.afp_patronal
+        totales["costo_patronal"] += detalle.costo_patronal
+
     return render(
         request,
         "planillas/detalle_planilla.html",
         {
             "planilla": planilla,
-            "detalles": detalles
+            "detalles": detalles,
+            "totales": totales
         }
     )
 
-
-# ==========================================
-# HISTORIAL
-# ==========================================
 
 def historial_planillas(request):
 
@@ -274,10 +680,6 @@ def historial_planillas(request):
         }
     )
 
-
-# ==========================================
-# CONFIGURACION GENERAL
-# ==========================================
 
 def configuracion(request):
 
@@ -313,10 +715,6 @@ def configuracion(request):
     )
 
 
-# ==========================================
-# ISR
-# ==========================================
-
 def isr(request):
 
     tramos = TramoISR.objects.all()
@@ -342,13 +740,11 @@ def isr_crear(request):
 
             form.save()
 
-            tramos = TramoISR.objects.all()
-
             return render(
                 request,
                 "planillas/isr.html",
                 {
-                    "tramos": tramos
+                    "tramos": TramoISR.objects.all()
                 }
             )
 
@@ -383,13 +779,11 @@ def isr_editar(request, id):
 
             form.save()
 
-            tramos = TramoISR.objects.all()
-
             return render(
                 request,
                 "planillas/isr.html",
                 {
-                    "tramos": tramos
+                    "tramos": TramoISR.objects.all()
                 }
             )
 
@@ -407,10 +801,6 @@ def isr_editar(request, id):
         }
     )
 
-
-# ==========================================
-# AGUINALDO
-# ==========================================
 
 def aguinaldo(request):
 
@@ -437,13 +827,11 @@ def aguinaldo_crear(request):
 
             form.save()
 
-            tramos = TramoAguinaldo.objects.all()
-
             return render(
                 request,
                 "planillas/aguinaldo.html",
                 {
-                    "tramos": tramos
+                    "tramos": TramoAguinaldo.objects.all()
                 }
             )
 
@@ -478,13 +866,11 @@ def aguinaldo_editar(request, id):
 
             form.save()
 
-            tramos = TramoAguinaldo.objects.all()
-
             return render(
                 request,
                 "planillas/aguinaldo.html",
                 {
-                    "tramos": tramos
+                    "tramos": TramoAguinaldo.objects.all()
                 }
             )
 
@@ -502,10 +888,6 @@ def aguinaldo_editar(request, id):
         }
     )
 
-
-# ==========================================
-# CARGAR TABLAS LEGALES
-# ==========================================
 
 def cargar_tablas_legales(request):
 

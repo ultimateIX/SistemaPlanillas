@@ -1,10 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <h2>
-
-        Planillas
-
-    </h2>
+    <h2>Planillas</h2>
 
 </div>
 
@@ -12,29 +8,18 @@
 
     <div class="card-body">
 
-        <h5 class="mb-3">
-
-            Generar Planilla
-
-        </h5>
+        <h5 class="mb-3">Generar Planilla</h5>
 
         <form
-
             hx-get="{% url 'generar_planilla' %}"
-
             hx-target="#contenido"
-
             hx-swap="innerHTML">
 
-            <div class="row">
+            <div class="row mb-4">
 
                 <div class="col-md-4">
 
-                    <label class="form-label">
-
-                        Fecha Inicio
-
-                    </label>
+                    <label class="form-label">Fecha Inicio</label>
 
                     <input
                         type="date"
@@ -46,11 +31,7 @@
 
                 <div class="col-md-4">
 
-                    <label class="form-label">
-
-                        Fecha Fin
-
-                    </label>
+                    <label class="form-label">Fecha Fin</label>
 
                     <input
                         type="date"
@@ -66,11 +47,163 @@
                         type="submit"
                         class="btn btn-success w-100">
 
-                        <i class="bi bi-calculator"></i>
-
                         Generar Planilla
 
                     </button>
+
+                </div>
+
+            </div>
+
+            <div class="card border-warning mb-4">
+
+                <div class="card-body">
+
+                    <h5 class="mb-3">
+                        ¿Algún empleado hizo horas extra diurnas?
+                    </h5>
+
+                    <div class="form-check form-check-inline">
+
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="tiene_horas_extra"
+                            id="horas_extra_no"
+                            value="no"
+                            checked
+                            onclick="document.getElementById('bloque-horas-extra').style.display='none';">
+
+                        <label
+                            class="form-check-label"
+                            for="horas_extra_no">
+
+                            No
+
+                        </label>
+
+                    </div>
+
+                    <div class="form-check form-check-inline">
+
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="tiene_horas_extra"
+                            id="horas_extra_si"
+                            value="si"
+                            onclick="document.getElementById('bloque-horas-extra').style.display='block';">
+
+                        <label
+                            class="form-check-label"
+                            for="horas_extra_si">
+
+                            Sí
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div
+                id="bloque-horas-extra"
+                class="card mb-4"
+                style="display: none;">
+
+                <div class="card-header">
+
+                    Empleados con horas extra diurnas
+
+                </div>
+
+                <div class="card-body">
+
+                    <p class="text-muted">
+                        Selecciona únicamente a los empleados que hicieron horas extra.
+                        Máximo permitido: 88 horas por quincena.
+                    </p>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover table-sm align-middle">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Aplicar</th>
+                                    <th>Empleado</th>
+                                    <th>Salario Mensual</th>
+                                    <th>Horas Extra Diurnas</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for empleado in empleados %}
+
+                                <tr>
+
+                                    <td>
+
+                                        <input
+                                            type="checkbox"
+                                            class="form-check-input"
+                                            name="empleados_horas_extra"
+                                            value="{{ empleado.id }}"
+                                            onclick="
+                                                const input = document.getElementById('horas_extra_{{ empleado.id }}');
+                                                input.disabled = !this.checked;
+                                                if (!this.checked) {
+                                                    input.value = 0;
+                                                }
+                                            ">
+
+                                    </td>
+
+                                    <td>
+                                        {{ empleado.nombre_completo }}
+                                    </td>
+
+                                    <td>
+                                        ${{ empleado.salario_mensual|floatformat:2 }}
+                                    </td>
+
+                                    <td style="max-width: 180px;">
+
+                                        <input
+                                            type="number"
+                                            id="horas_extra_{{ empleado.id }}"
+                                            name="horas_extra_{{ empleado.id }}"
+                                            class="form-control form-control-sm"
+                                            min="0"
+                                            max="88"
+                                            step="0.01"
+                                            value="0"
+                                            disabled>
+
+                                    </td>
+
+                                </tr>
+
+                                {% empty %}
+
+                                <tr>
+                                    <td colspan="4">
+                                        No hay empleados activos.
+                                    </td>
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
 
                 </div>
 
@@ -86,28 +219,18 @@
 
     <div class="card-body">
 
-        <h5>
-
-            Historial de Planillas
-
-        </h5>
+        <h5>Historial de Planillas</h5>
 
         <table class="table table-hover">
 
             <thead>
 
                 <tr>
-
                     <th>ID</th>
-
                     <th>Inicio</th>
-
                     <th>Fin</th>
-
                     <th>Total Pagado</th>
-
                     <th>Acciones</th>
-
                 </tr>
 
             </thead>
@@ -118,43 +241,23 @@
 
                 <tr>
 
-                    <td>
+                    <td>{{ planilla.id }}</td>
 
-                        {{ planilla.id }}
+                    <td>{{ planilla.periodo_inicio|date:"d/m/Y" }}</td>
 
-                    </td>
+                    <td>{{ planilla.periodo_fin|date:"d/m/Y" }}</td>
 
-                    <td>
-
-                        {{ planilla.periodo_inicio|date:"d/m/Y" }}
-
-                    </td>
-
-                    <td>
-
-                        {{ planilla.periodo_fin|date:"d/m/Y" }}
-
-                    </td>
-
-                    <td>
-
-                        ${{ planilla.total_planilla|floatformat:2 }}
-
-                    </td>
+                    <td>${{ planilla.total_planilla|floatformat:2 }}</td>
 
                     <td>
 
                         <button
-
                             class="btn btn-primary btn-sm"
-
                             hx-get="{% url 'detalle_planilla' planilla.id %}"
-
                             hx-target="#contenido"
-
                             hx-swap="innerHTML">
 
-                            <i class="bi bi-eye"></i>
+                            Ver
 
                         </button>
 
@@ -165,13 +268,9 @@
                 {% empty %}
 
                 <tr>
-
                     <td colspan="5">
-
                         No existen planillas registradas.
-
                     </td>
-
                 </tr>
 
                 {% endfor %}
