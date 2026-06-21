@@ -1,0 +1,1 @@
+web: gunicorn planilla_project.wsgi:application
